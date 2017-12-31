@@ -61,3 +61,4 @@ Once the data is sent, it will be received by the target and `onDataReceive` del
 
 ## Planned Features
 1. Increase bandwidth by supporting more than one antenna, as each antenna can only transmit once per tick.
+2. Rewrite the code to be more compact and clean (this is the first attempt).
