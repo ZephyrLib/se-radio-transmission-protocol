@@ -1,11 +1,5 @@
     /// <summary>
-    /// <para>Connection Protocol v1.0</para>
-    /// <para>Connection framework with high level API.</para>
-    /// <para><list type="bullet">
-    /// <item>High level api with simple data send/receive handling</item>
-    /// <item>Symmetric encryption support - both connected sides must specify the same key</item>
-    /// <item>Packet delivery ensurance - packets are guaranteed to be delivered, or the connection will be closed</item>
-    /// </list></para>
+    /// Connection Protocol v1.0
     /// </summary>
     public static class ConnectionProtocol {
 
