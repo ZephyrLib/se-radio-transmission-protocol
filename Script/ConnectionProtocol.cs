@@ -1,5 +1,6 @@
 /// <summary>
-/// Connection Protocol v1.0
+/// <para>Connection Protocol v1.0</para>
+/// <para>Ready to be copy-pasted into VS for editing / script reference.
 /// </summary>
 public static class ConnectionProtocol {
 
@@ -58,15 +59,16 @@ public static class ConnectionProtocol {
     /// Main Initialization method that prepares the protocol for operation.
     /// </summary>
     /// <param name="antenna">Radio antenna to use in transmission</param>
-    /// <param name="hostId">Identifier for this protocol instance (that is, a programming block)</param>
+    /// <param name="hostId">Identifier for this protocol instance, alternative of an IP (that is, a programming block)</param>
     /// <param name="onDataReceive">Called when data was received from the specified connection (connection object, data received)</param>
     /// <param name="onConnectionRequest">Called when a request to open an unencrypted connection is received (sender name, channel, return: accept[true], decline[false])</param>
     /// <param name="onSecureConnectionRequest">Called when a request to open a secure connection is received (sender name, channel, return: null[decline], crypto key to use)</param>
     /// <param name="onConnectionOpen">Called when a new connection is opened (connection object that is now active)</param>
     /// <param name="onConnectionClose">Called when a connection is closed (connection object that is no longer active)</param>
     /// <param name="maxPacketResendCount">Maximal amount of times to send data packets before closing down related connection</param>
-    public static void Init(IMyRadioAntenna antenna, string hostId, Action<IConnection, string> onDataReceive, Func<string, byte, bool> onConnectionRequest, Func<string, byte, byte[]> onSecureConnectionRequest, Action<IConnection> onConnectionOpen, Action<IConnection> onConnectionClose, int maxPacketResendCount = 10) {
+    public static bool Init(IMyRadioAntenna antenna, string hostId, Action<IConnection, string> onDataReceive, Func<string, byte, bool> onConnectionRequest, Func<string, byte, byte[]> onSecureConnectionRequest, Action<IConnection> onConnectionOpen, Action<IConnection> onConnectionClose, int maxPacketResendCount = 10) {
         Shutdown();// safeguard against already initialized protocol
+        if (antenna == null || hostId == null) { return false; }
         ConnectionProtocol.antenna = antenna;
         ConnectionProtocol.hostId = hostId;
         ConnectionProtocol.onDataReceive = onDataReceive;
@@ -77,6 +79,7 @@ public static class ConnectionProtocol {
         maxSendCount = maxPacketResendCount > 0 ? maxPacketResendCount : 1;// minimum of 1 send, which most probably will fail quickly
         connections = new List<IBaseConnection>();
         connections.Add(new StaticConnection());// initialize index 0 to the static connection
+        return true;
     }
 
     /// <summary>
@@ -262,10 +265,10 @@ public static class ConnectionProtocol {
     /// <para>If encryption hash or target id are null, connection will not be opened.</para>
     /// </summary>
     /// <param name="targetId">target identification</param>
-    /// <param name="encryptionHash">hash to use in data cryptography</param>
     /// <param name="channel">channel</param>
+    /// <param name="encryptionHash">hash to use in data cryptography</param>
     /// <returns>Connection object</returns>
-    public static IConnection OpenNewSecureConnection(string targetId, byte[] encryptionHash, byte channel = 1, MyTransmitTarget transmissionTarget = MyTransmitTarget.Default) {
+    public static IConnection OpenNewSecureConnection(string targetId, byte channel, byte[] encryptionHash, MyTransmitTarget transmissionTarget = MyTransmitTarget.Default) {
         if (targetId != null && encryptionHash != null && IsInitialized) {
             for (int i = 1, l = connections.Count; i < l; i++) {
                 ConnectionImpl c = (ConnectionImpl)connections[i];
@@ -356,9 +359,9 @@ public static class ConnectionProtocol {
         bool IsSecure { get; }
 
         /// <summary>
-        /// Connection state
+        /// Indicates whether the connection can be used for data transmission.
         /// </summary>
-        bool IsAlive { get; }
+        bool IsReady { get; }
 
         /// <summary>
         /// Connection state
@@ -434,7 +437,7 @@ public static class ConnectionProtocol {
         public string TargetID { get { return targetId; } }
         public byte Channel { get { return channel; } }
         public bool IsSecure { get { return hashKey != null; } }
-        public bool IsAlive { get { return standardPackets != null; } }
+        public bool IsReady { get { return approved == approve_approved; } }
         public bool IsClosed { get { return callbacksInARow < -100; } }
 
         public byte[] hashKey = null;// hashing key for secure connection
@@ -878,7 +881,7 @@ public static class ConnectionProtocol {
     /// <param name="data">string to encrypt</param>
     /// <param name="key">encryption key</param>
     /// <returns>Base64 encrypted string</returns>
-    public static string EncryptData(string data, byte[] key) {
+    private static string EncryptData(string data, byte[] key) {
         byte[] data0 = encoding.GetBytes(data);// decode string to bytes
         for (int i = 0, j = 0, l = data0.Length, l1 = key.Length; i < l; i++, j = ++j >= l1 ? (j = 0) : j) {
             data0[i] = (byte)(data0[i] ^ (key[j]));// xor data bytes and the key
@@ -892,7 +895,7 @@ public static class ConnectionProtocol {
     /// <param name="data">base64 string to decrypt, will be decrypted to original, or null if the supplied string was not in base64 format<</param>
     /// <param name="key">encryption key</param>
     /// <returns>True if decryption suceeded, false otherwise</returns>
-    public static bool TryDecryptData(ref string data, byte[] key) {
+    private static bool TryDecryptData(ref string data, byte[] key) {
         if (IsBase64String(data)) {// guard against Convert.FromBase64String exceptions by checking the string beforehand
             byte[] input = Convert.FromBase64String(data);// convert base64 into encrypted bytes
             for (int i = 0, j = 0, l = input.Length, l1 = key.Length; i < l; i++, j = ++j >= l1 ? (j = 0) : j) {
@@ -909,7 +912,7 @@ public static class ConnectionProtocol {
     /// </summary>
     /// <param name="s">string to check</param>
     /// <returns>True if the string is valid, false otherwise</returns>
-    public static bool IsBase64String(string s) {
+    private static bool IsBase64String(string s) {Convert.FromBase64String
         int l = s.Length;
         if (l == 0) { return true; }// Base64 allows 0 length
         if (l % 4 != 0) { return false; }// Only allow multiple of 4 length if not 0
