@@ -1,4 +1,4 @@
-/// PB ready version
+/// PB ready version, ready for copy-paste
 /// > Public API is unchanged
 /// > All internal variables changed to one-letter names
 /// > Member visibility exposure due to removal of public keywords
