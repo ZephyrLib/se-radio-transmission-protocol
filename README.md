@@ -39,9 +39,9 @@ The script is designed to be run frequently (`Runtime.UpdateFrequency = UpdateFr
 
 On each PB invocation the script should:
 1. Test whether UpdateType is Antenna, in which case `ConnectionProtocol.OnReceiveAntennaMessage` should be invoked, passing the argument from the `Main` method
-    >Processes the message and invokes `onDataReceive` delegate
+   >Processes the message and invokes `onDataReceive` delegate
 2. Invoke `ConnectionProtocol.UpdateLogic`
-    >Attempts to send exactly one packet from the currently queued packets
+   >Attempts to send exactly one packet from the currently queued packets
 #### 2.3 Opening Connections
 Connection can be opened with `ConnectionProtocol.OpenNewConnection(string, byte)` or `OpenNewSecureConnection(string, byte, byte[])`. Both methods require target identifier (`string`) and channel (`byte`) to operate. Secure connection also requres a `byte array` as a key, which can be obtained from a `string` by calling `ConnectionProtocol.StringToHash(string)` which will convert the specified string to bytes.
 
@@ -54,6 +54,13 @@ It is recommended to run `UpdateLogic` more frequently than sending data, as tha
 To send data through an open connection invoke `IConnection.SendData`, passing a `string` as an argument. If the method returned `true`, the data was queued up and will be sent in the next few update cycles. However, a `false` return value can indicate that the connection is not yet ready for data transmission, or is closed. These conection states can be tested with `IsReady` and `IsClosed` properties of `IConnection` object.
 
 Once the data is sent, it will be received by the target and `onDataReceive` delegate will be invoked on the target's PB.
+### 3 Which code do I use?
+1. ConnectionProtocol.cs
+   >Source code and the api reference that should be used if developing a script in Visual Studio
+2. ConnectionProtocol_PB_API.cs
+   >Compressed and somewhat obfuscated code with all internal member and variable names reduced to one-letter to save space in the programming block
+3. PB_Test.cs
+   >A test script that is used to test whether the the protocol is working as intended
 ## Notes
 1. At the moment the script has not been widely tested, and as such may contain bugs that will cause connections to close at some points or script termination.
 2. Any bug reports are welcome to be submitted (include exception from script and brief summary of actions that lead to the script termination).
