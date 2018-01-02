@@ -1,8 +1,8 @@
 /// <summary>
-/// <para>Connection Protocol v1.0</para>
+/// <para>Transmission Protocol v1.0</para>
 /// <para>Ready to be copy-pasted into VS for editing / script reference.
 /// </summary>
-public static class ConnectionProtocol {
+public static class TransmissionProtocol {
 
     /// <summary>True to output debug messages, false otherwise</summary>
     private const bool PRINTDEBUG = true;// const to optimize compilation
@@ -69,13 +69,13 @@ public static class ConnectionProtocol {
     public static bool Init(IMyRadioAntenna antenna, string hostId, Action<IConnection, string> onDataReceive, Func<string, byte, bool> onConnectionRequest, Func<string, byte, byte[]> onSecureConnectionRequest, Action<IConnection> onConnectionOpen, Action<IConnection> onConnectionClose, int maxPacketResendCount = 10) {
         Shutdown();// safeguard against already initialized protocol
         if (antenna == null || hostId == null) { return false; }
-        ConnectionProtocol.antenna = antenna;
-        ConnectionProtocol.hostId = hostId;
-        ConnectionProtocol.onDataReceive = onDataReceive;
-        ConnectionProtocol.onConnectionRequest = onConnectionRequest;
-        ConnectionProtocol.onSecureConnectionRequest = onSecureConnectionRequest;
-        ConnectionProtocol.onConnectionOpen = onConnectionOpen;
-        ConnectionProtocol.onConnectionClose = onConnectionClose;
+        TransmissionProtocol.antenna = antenna;
+        TransmissionProtocol.hostId = hostId;
+        TransmissionProtocol.onDataReceive = onDataReceive;
+        TransmissionProtocol.onConnectionRequest = onConnectionRequest;
+        TransmissionProtocol.onSecureConnectionRequest = onSecureConnectionRequest;
+        TransmissionProtocol.onConnectionOpen = onConnectionOpen;
+        TransmissionProtocol.onConnectionClose = onConnectionClose;
         maxSendCount = maxPacketResendCount > 0 ? maxPacketResendCount : 1;// minimum of 1 send, which most probably will fail quickly
         connections = new List<IBaseConnection>();
         connections.Add(new StaticConnection());// initialize index 0 to the static connection
