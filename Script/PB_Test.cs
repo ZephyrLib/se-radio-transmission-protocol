@@ -15,6 +15,8 @@ const string def_block_lcdPanel = "LCD";// panel to output received data to
 IMyRadioAntenna antenna;
 IMyTextPanel lcdPanel;
 
+string messages = "";
+
 Program() {
     List<IMyTerminalBlock> blocks = new List<IMyTerminalBlock>();
     GridTerminalSystem.SearchBlocksOfName(def_block_antenna, blocks);
@@ -68,9 +70,10 @@ void Main(string arg, UpdateType updateType) {
         }
     }
     TransmissionProtocol.UpdateLogic();
+    if (lcdPanel != null) { lcdPanel.WritePublicText((connection == null ? "disconnected" : connection.ToString()) + "\n" + messages); }
 }
 
-void OnDataReceive(TransmissionProtocol.IConnection connection, string data) { if (lcdPanel != null) { lcdPanel.WritePublicText(data, true); } }
+void OnDataReceive(TransmissionProtocol.IConnection connection, string data) { messages += data + "\n"; }
 
 bool OnConnectionRequest(string hostId, byte channel) { return connection == null; }
 
@@ -79,6 +82,7 @@ byte[] OnSecureConnectionRequest(string histId, byte channel) { return connectio
 void OnConnectionOpen(TransmissionProtocol.IConnection connection) { if (this.connection != null) { this.connection.Close(); } this.connection = connection; }
 
 void OnConnectionClose(TransmissionProtocol.IConnection connection) { if (connection == this.connection) { this.connection = null; } }
+
 
 /// Compressed TransmissionProtocol class, PB ready
 static class TransmissionProtocol{static IMyRadioAntenna n;static string q;static Action<H,string>r;static Func<string,byte,bool>u;static Func<string,byte,byte[]>v;static Action<IConnection>w;static Action<IConnection>L;static int
