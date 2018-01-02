@@ -1,6 +1,6 @@
 /// <summary>
 /// <para>Transmission Protocol v1.0</para>
-/// <para>Ready to be copy-pasted into VS for editing / script reference.
+/// <para>Ready to be copy-pasted into VS for editing / script reference.</para>
 /// </summary>
 public static class TransmissionProtocol {
 
@@ -912,7 +912,7 @@ public static class TransmissionProtocol {
     /// </summary>
     /// <param name="s">string to check</param>
     /// <returns>True if the string is valid, false otherwise</returns>
-    private static bool IsBase64String(string s) {Convert.FromBase64String
+    private static bool IsBase64String(string s) {
         int l = s.Length;
         if (l == 0) { return true; }// Base64 allows 0 length
         if (l % 4 != 0) { return false; }// Only allow multiple of 4 length if not 0
