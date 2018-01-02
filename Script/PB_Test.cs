@@ -3,9 +3,9 @@
 /// Command Format: [command]:[arg 0]:[arg 1]:...
 ///
 /// Commands:
-///           connect:[target Name]:[channel]:[encrypted ? (true/false)]// initiates a new connection
-///           send:[text data]// sends data over an open connection if there is such
-///           disonnect// disconnects an open connection if there is such
+///           connect:[target Name]:[channel]:[encrypted ? (true/false)] // initiates a new connection
+///           send:[text data] // sends data over an open connection if there is such
+///           disonnect // disconnects an open connection if there is such
 
 public const string Name = "HostA";// unique name for this protocol instance
 
