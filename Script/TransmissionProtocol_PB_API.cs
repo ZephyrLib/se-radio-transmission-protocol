@@ -4,7 +4,7 @@
 /// > Member visibility exposure due to removal of public keywords
 
 
-static class ConnectionProtocol{static IMyRadioAntenna n;static string q;static Action<H,string>r;static Func<string,byte,bool>u;static Func<string,byte,byte[]>v;static Action<IConnection>w;static Action<IConnection>L;static int
+static class TransmissionProtocol{static IMyRadioAntenna n;static string q;static Action<H,string>r;static Func<string,byte,bool>u;static Func<string,byte,byte[]>v;static Action<IConnection>w;static Action<IConnection>L;static int
 N;static List<F>R;static int T=0;static bool IsInitialized{get{return n!=null&&q!=null;}}public static byte[]StringToHash(string key){byte[]a=Encoding.Unicode.GetBytes(key);int l=a.Length;byte b=a[l-1];for(int i=0,j=1;i<l;i++,
 j++){a[i]=(byte)(a[i]<<(((i>>0)&0xff)^(j<l?a[j]:b)));}return a;}public static bool Init(IMyRadioAntenna antenna,string hostId,Action<IConnection,string> onDataReceive,Func<string,byte,bool>onConnectionRequest,Func<string,byte,
 byte[]>onSecureConnectionRequest,Action<IConnection>onConnectionOpen,Action<IConnection>onConnectionClose,int maxPacketResendCount=10){Shutdown();if(antenna==null||hostId==null){return false;}n=antenna;q=hostId;r=onDataReceive;u
