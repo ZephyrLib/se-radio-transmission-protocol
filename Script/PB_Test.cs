@@ -1,4 +1,4 @@
-/// Test PB Script for ConnectionProtocol
+/// Test PB Script for TransmissionProtocol
 /// Specify a unique 'Name' for each PB
 /// Command Format: [command]:[arg 0]:[arg 1]:...
 ///
@@ -24,16 +24,16 @@ Program() {
 
     antenna.AttachedProgrammableBlock = Me.EntityId;
 
-    ConnectionProtocol.Init(antenna, Name, OnDataReceive, OnConnectionRequest, OnSecureConnectionRequest, OnConnectionOpen, OnConnectionClose);
+    TransmissionProtocol.Init(antenna, Name, OnDataReceive, OnConnectionRequest, OnSecureConnectionRequest, OnConnectionOpen, OnConnectionClose);
 
     Runtime.UpdateFrequency = UpdateFrequency.Update10;
 }
 
-ConnectionProtocol.IConnection connection;
+TransmissionProtocol.IConnection connection;
 
 void Main(string arg, UpdateType updateType) {
     if (updateType == UpdateType.Antenna) {// process received transmission
-        ConnectionProtocol.OnReceiveAntennaMessage(arg);
+        TransmissionProtocol.OnReceiveAntennaMessage(arg);
     } else if (updateType == UpdateType.Terminal) {// process user command
         string[] args = arg.Split(':');
         string cmd = args[0];
@@ -44,11 +44,11 @@ void Main(string arg, UpdateType updateType) {
                     byte channel;
                     if (byte.TryParse(args[2], out channel)) {
                         bool secure = args[3].ToLower() == "true";
-                        ConnectionProtocol.IConnection c;
+                        TransmissionProtocol.IConnection c;
                         if (secure) {
-                            c = ConnectionProtocol.OpenNewSecureConnection(targetId, channel, ConnectionProtocol.StringToHash("1234"));
+                            c = TransmissionProtocol.OpenNewSecureConnection(targetId, channel, TransmissionProtocol.StringToHash("1234"));
                         } else {
-                            c = ConnectionProtocol.OpenNewConnection(targetId, channel);
+                            c = TransmissionProtocol.OpenNewConnection(targetId, channel);
                         }
                         connection = c;
                     }
@@ -67,21 +67,21 @@ void Main(string arg, UpdateType updateType) {
             }
         }
     }
-    ConnectionProtocol.UpdateLogic();
+    TransmissionProtocol.UpdateLogic();
 }
 
-void OnDataReceive(ConnectionProtocol.IConnection connection, string data) { if (lcdPanel != null) { lcdPanel.WritePublicText(data, true); } }
+void OnDataReceive(TransmissionProtocol.IConnection connection, string data) { if (lcdPanel != null) { lcdPanel.WritePublicText(data, true); } }
 
 bool OnConnectionRequest(string hostId, byte channel) { return connection == null; }
 
-byte[] OnSecureConnectionRequest(string histId, byte channel) { return connection == null ? ConnectionProtocol.StringToHash("1234") : null; }
+byte[] OnSecureConnectionRequest(string histId, byte channel) { return connection == null ? TransmissionProtocol.StringToHash("1234") : null; }
 
-void OnConnectionOpen(ConnectionProtocol.IConnection connection) { if (this.connection != null) { this.connection.Close(); } this.connection = connection; }
+void OnConnectionOpen(TransmissionProtocol.IConnection connection) { if (this.connection != null) { this.connection.Close(); } this.connection = connection; }
 
-void OnConnectionClose(ConnectionProtocol.IConnection connection) { if (connection == this.connection) { this.connection = null; } }
+void OnConnectionClose(TransmissionProtocol.IConnection connection) { if (connection == this.connection) { this.connection = null; } }
 
-/// Compressed ConnectionProtocol class, PB ready
-static class ConnectionProtocol{static IMyRadioAntenna n;static string q;static Action<H,string>r;static Func<string,byte,bool>u;static Func<string,byte,byte[]>v;static Action<IConnection>w;static Action<IConnection>L;static int
+/// Compressed TransmissionProtocol class, PB ready
+static class TransmissionProtocol{static IMyRadioAntenna n;static string q;static Action<H,string>r;static Func<string,byte,bool>u;static Func<string,byte,byte[]>v;static Action<IConnection>w;static Action<IConnection>L;static int
 N;static List<F>R;static int T=0;static bool IsInitialized{get{return n!=null&&q!=null;}}public static byte[]StringToHash(string key){byte[]a=Encoding.Unicode.GetBytes(key);int l=a.Length;byte b=a[l-1];for(int i=0,j=1;i<l;i++,
 j++){a[i]=(byte)(a[i]<<(((i>>0)&0xff)^(j<l?a[j]:b)));}return a;}public static bool Init(IMyRadioAntenna antenna,string hostId,Action<IConnection,string> onDataReceive,Func<string,byte,bool>onConnectionRequest,Func<string,byte,
 byte[]>onSecureConnectionRequest,Action<IConnection>onConnectionOpen,Action<IConnection>onConnectionClose,int maxPacketResendCount=10){Shutdown();if(antenna==null||hostId==null){return false;}n=antenna;q=hostId;r=onDataReceive;u
