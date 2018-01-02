@@ -1,5 +1,5 @@
-# Space Engineers Radio Connection Protocol
-Space Engineers connection protocol based around reliably sending and receiving data across different grids using radio antennas.
+# Space Engineers Radio Transmission Protocol
+Space Engineers data transmission protocol based around reliably sending and receiving data across different grids using radio antennas.
 
 ## Current Features
 1. High level API - requires minimal time to write code to use the protocol
@@ -12,7 +12,7 @@ Space Engineers connection protocol based around reliably sending and receiving 
 2. Antenna set to trigger the PB
 ### 2 API Usage
 #### 2.1 Protocol Initialization
-Before opening any connections the protocol must be initialized with `ConnectionProtocol.Init` method.
+Before opening any connections the protocol must be initialized with `TransmissionProtocol.Init` method.
 
 Initialization Arguments:
 1. [`IMyRadioAntenna` antenna] Antenna to use in transmission
@@ -38,12 +38,12 @@ Initialization Arguments:
 The script is designed to be run frequently (`Runtime.UpdateFrequency = UpdateFrequency.Update1/Update10/Update100`).
 
 On each PB invocation the script should:
-1. Test whether UpdateType is Antenna, in which case `ConnectionProtocol.OnReceiveAntennaMessage` should be invoked, passing the argument from the `Main` method
+1. Test whether UpdateType is Antenna, in which case `TransmissionProtocol.OnReceiveAntennaMessage` should be invoked, passing the argument from the `Main` method
    >Processes the message and invokes `onDataReceive` delegate
-2. Invoke `ConnectionProtocol.UpdateLogic`
+2. Invoke `TransmissionProtocol.UpdateLogic`
    >Attempts to send exactly one packet from the currently queued packets
 #### 2.3 Opening Connections
-Connection can be opened with `ConnectionProtocol.OpenNewConnection(string, byte)` or `OpenNewSecureConnection(string, byte, byte[])`. Both methods require target identifier (`string`) and channel (`byte`) to operate. Secure connection also requres a `byte array` as a key, which can be obtained from a `string` by calling `ConnectionProtocol.StringToHash(string)` which will convert the specified string to bytes.
+Connection can be opened with `OpenNewConnection(string, byte)` or `OpenNewSecureConnection(string, byte, byte[])`. Both methods require target identifier (`string`) and channel (`byte`) to operate. Secure connection also requres a `byte array` as a key, which can be obtained from a `string` by calling `StringToHash(string)` which will convert the specified string to bytes.
 
 Note that after opening the connection there will be a few update cycles (usually 4 ticks) when the connection will not be able to send data, and any data queued will be discarded. To avoid this, only cache the connection object from `onConnectionOpen` delegate.
 #### 2.4 Accepting Connections
@@ -55,9 +55,9 @@ To send data through an open connection invoke `IConnection.SendData`, passing a
 
 Once the data is sent, it will be received by the target and `onDataReceive` delegate will be invoked on the target's PB.
 ### 3 Which code do I use?
-1. ConnectionProtocol.cs
+1. TransmissionProtocol.cs
    >Source code and the api reference that should be used if developing a script in Visual Studio
-2. ConnectionProtocol_PB_API.cs
+2. TransmissionProtocol_PB_API.cs
    >Compressed and somewhat obfuscated code with all internal member and variable names reduced to one-letter to save space in the programming block
 3. PB_Test.cs
    >A test script that is used to test whether the the protocol is working as intended
