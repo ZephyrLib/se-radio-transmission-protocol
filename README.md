@@ -68,5 +68,6 @@ Once the data is sent, it will be received by the target and `onDataReceive` del
 3. Current encryption is not supposed to be something unbreakable, simply makes data reading harder without the key.
 
 ## Planned Features
-1. Increase bandwidth by supporting more than one antenna, as each antenna can only transmit once per tick.
+1. ~~Increase bandwidth by supporting more than one antenna, as each antenna can only transmit once per tick.~~
 2. Rewrite the code to be more compact and clean (this is the first attempt).
+3. Increase bandwidth by supporting more than one packet per transmission.
